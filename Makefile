@@ -41,12 +41,32 @@ install-service: install /etc/MMDVM.ini
 		@chown mmdvm:mmdvm /var/log/mmdvm
 		@cp ./linux/systemd/mmdvmhost.service /lib/systemd/system/
 		@systemctl enable mmdvmhost.service
-
+		
 /etc/MMDVM.ini:
 		@cp -n MMDVM.ini /etc/MMDVM.ini
 		@sed -i 's/FilePath=./FilePath=\/var\/log\/mmdvm\//' /etc/MMDVM.ini
 		@sed -i 's/Daemon=0/Daemon=1/' /etc/MMDVM.ini
 		@chown mmdvm:mmdvm /etc/MMDVM.ini
+
+
+.PHONY install-pi-star:
+install-pi-star: install /etc/mmdvmhost
+		echo "toto"
+		cp -v MMDVM.ini /etc/mmdvmhost
+		sed -i 's/FilePath=./FilePath=\/var\/log\/pi-star\//' /etc/mmdvmhost
+		sed -i 's/Daemon=0/Daemon=1/' /etc/mmdvmhost
+		@chown mmdvm:mmdvm /etc/mmdvmhost
+		echo "titi"
+		@useradd --user-group -M --system mmdvm --shell /bin/false || true
+		@usermod --groups dialout --append mmdvm || true
+		@mkdir /var/log/pi-star || true
+		@chown mmdvm:mmdvm /var/log/pi-star
+		@cp ./linux/pi-star/systemd/mmdvmhost.service /lib/systemd/system/
+		@cp ./linux/pi-star/systemd/mmdvmhost.timer /lib/systemd/system/
+		@systemctl enable mmdvmhost.service		
+
+/etc/mmdvmhost:
+				
 
 .PHONY uninstall-service:
 uninstall-service:
